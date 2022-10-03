@@ -1,9 +1,13 @@
 #version 430
 
-out vec4 daColor;
-in vec3 theColor;
+out vec4 finalColor;
+in vec3 vColor;
+in vec2 vPosition;
 
 void main()
 {
-	daColor = vec4(theColor, 1.0);
+	finalColor = vec4(
+		vColor.x * (1 - vPosition.x),
+		vColor.y * vPosition.y,
+		vColor.z, 1.0);
 }
