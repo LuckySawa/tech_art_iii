@@ -87,6 +87,7 @@ void sendDataToOpenGL()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(verts),
 		verts, GL_STATIC_DRAW);
 	
+	// Position & Color
 	glEnableVertexAttribArray(0);
 	// (index, size(xyzw), type, normalized, stride, pointer)
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, 0);
@@ -104,8 +105,11 @@ void sendDataToOpenGL()
 		indices, GL_STATIC_DRAW);
 }
 
+
 string readShaderCode(const char* fileName)
 {
+
+	// Need to include fstream
 	ifstream meInput(fileName);
 	if ( ! meInput.good())
 	{
@@ -119,12 +123,15 @@ string readShaderCode(const char* fileName)
 
 void installShaders()
 {
+	// Handle, like a pointer
 	GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 	GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
 	const GLchar* adapter[1];
+	// Can't use .c_str() directly
 	string temp = readShaderCode("VertexShaderCode.glsl");
 	adapter[0] = temp.c_str();
+	// Set shader source to shader handle
 	glShaderSource(vertexShaderID, 1, adapter, 0);
 	temp = readShaderCode("FragmentShaderCode.glsl");
 	adapter[0] = temp.c_str();
@@ -133,20 +140,24 @@ void installShaders()
 	glCompileShader(vertexShaderID);
 	glCompileShader(fragmentShaderID);
 
+	// Check & Print error
 	if( ! checkShaderStatus(vertexShaderID) || ! checkShaderStatus(fragmentShaderID))
 		return;
 
+	// Program setup
 	GLuint programID = glCreateProgram();
 	glAttachShader(programID, vertexShaderID);
 	glAttachShader(programID, fragmentShaderID);
 	glLinkProgram(programID);
 
+	// Check & Print error
 	if ( ! checkProgramStatus(programID))
 		return;
 
 	glUseProgram(programID);
 }
 
+// Overall flow
 void MeGlWindow::initializeGL()
 {
 	glewInit();
@@ -158,7 +169,7 @@ void MeGlWindow::initializeGL()
 void MeGlWindow::paintGL()
 {
 	// Background color
-	glClearColor(0.2, 0.0, 0.0, 1.0);
+	glClearColor(0.0, 0.15, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glFlush();
 
