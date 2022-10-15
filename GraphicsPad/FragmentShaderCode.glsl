@@ -1,8 +1,9 @@
 #version 430
 
-out vec4 finalColor;
 in vec3 vColor;
 in vec2 vPosition;
+
+out vec4 finalColor;
 
 void main()
 {
