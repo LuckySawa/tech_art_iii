@@ -23,10 +23,30 @@ struct vec2 {
 		return v;
 	}
 };
+struct vec3 {
+	float r, g, b;
+
+	vec3() { r = 0; g = 0; b = 0; };
+	vec3(float vr, float vg, float vb) {
+		r = vr;
+		g = vg;
+		b = vb;
+	}
+	vec3 operator += (vec3 vec) {
+		vec3 v;
+		r = r + vec.r;
+		g = g + vec.g;
+		b = b + vec.b;
+		v.r = r;
+		v.g = g;
+		v.b = b;
+
+		return v;
+	}
+};
 
 vec2 offset;
-vec2 blueOffset;
-vec2 redOffset;
+vec3 color = vec3(0.05, 0.0, 0.0);
 float moveSpeed = 0.01f;
 
 // For WASD input
@@ -35,28 +55,28 @@ void MeGlWindow::keyPressEvent(QKeyEvent* e)
 	switch (e->key())
 	{
 	case Qt::Key::Key_W:
-		blueOffset += vec2(0.0f, moveSpeed);
+		offset += vec2(0.0f, moveSpeed);
 		break;
 	case Qt::Key::Key_A:
-		blueOffset += vec2(-moveSpeed, 0.0f);
+		offset += vec2(-moveSpeed, 0.0f);
 		break;
 	case Qt::Key::Key_S:
-		blueOffset += vec2(0.0f, -moveSpeed);
+		offset += vec2(0.0f, -moveSpeed);
 		break;
 	case Qt::Key::Key_D:
-		blueOffset += vec2(moveSpeed, 0.0f);
+		offset += vec2(moveSpeed, 0.0f);
 		break;
 	case Qt::Key::Key_Up:
-		redOffset += vec2(0.0f, moveSpeed);
+		offset += vec2(0.0f, moveSpeed);
 		break;
 	case Qt::Key::Key_Left:
-		redOffset += vec2(-moveSpeed, 0.0f);
+		offset += vec2(-moveSpeed, 0.0f);
 		break;
 	case Qt::Key::Key_Down:
-		redOffset += vec2(0.0f, -moveSpeed);
+		offset += vec2(0.0f, -moveSpeed);
 		break;
 	case Qt::Key::Key_Right:
-		redOffset += vec2(moveSpeed, 0.0f);
+		offset += vec2(moveSpeed, 0.0f);
 		break;
 	}
 
@@ -98,10 +118,11 @@ bool checkProgramStatus(GLuint programID)
 }
 
 const uint NUM_VERTICES_PER_TRI = 3;
-const uint NUM_FLOATS_PER_VERTICE = 5; // x,y,r,g,b
+const uint NUM_FLOATS_PER_VERTICE = 7; // x,y,r,g,b,offsetX, offsetY
 const uint TRIANGLE_BYTE_SIZE = NUM_VERTICES_PER_TRI * NUM_FLOATS_PER_VERTICE * sizeof(float);
 const uint NUM_TRI = 7;
 const uint TOTAL_IDX_BYTE_SIZE = NUM_TRI * 3 * sizeof(GLushort);
+
 
 void sendDataToOpenGL()
 {
@@ -111,13 +132,19 @@ void sendDataToOpenGL()
 	glBindBuffer(GL_ARRAY_BUFFER, myBufferID);
 	// NULL: Fill in data later
 	glBufferData(GL_ARRAY_BUFFER, NUM_TRI * TRIANGLE_BYTE_SIZE + TOTAL_IDX_BYTE_SIZE, NULL, GL_STATIC_DRAW);
-	
+
 	// Position
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, 0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 7, 0);
 	// Color
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (char*)(sizeof(float) * 2));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 7, (char*)(sizeof(float) * 2));
+	// Offset
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 7, (char*)(sizeof(float) * 5));
+
+	// Triangle
+	//glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(verts), (char*)verts);
 	// Index
 	GLushort indices[] = { 0, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 7, 8, 9, 10, 9, 10, 11, 12, 13, 14 };
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, myBufferID);
@@ -125,42 +152,59 @@ void sendDataToOpenGL()
 }
 
 void UpdateDataToOpenGL() {
-	GLfloat r = 1.0; GLfloat g = 0.0; GLfloat b = 0.0;
+	//GLfloat verts[] =
+	//{
+	//	-1.0f, +0.0f,
+	//	r, g, b,
+	//	-0.8f, -0.2f,
+	//	r, g, b,
+	//	+0.6f, +0.0f,
+	//	r, g, b,
+	//	+0.6f, -0.2f,
+	//	r, g, b,
+	//	+0.6f, +0.1f,
+	//	r, g, b,
+	//	+0.6f, -0.3f,
+	//	r, g, b,
+	//	+0.65f, +0.1f,
+	//	r, g, b,
+	//	+0.65f, -0.3f,
+	//	r, g, b,
+	//	+0.65f, +0.0f,
+	//	r, g, b,
+	//	+0.65f, -0.2f,
+	//	r, g, b,
+	//	+1.0f, +0.0f,
+	//	r, g, b,
+	//	+1.0f, -0.2f,
+	//	r, g, b,
+
+	//	-0.8f, +0.5f,
+	//	r, g, b,
+	//	-1.0f, +0.5f,
+	//	r, g, b,
+	//	-0.6f, +0.8f,
+	//	r, g, b,
+	//};
 
 	GLfloat verts[] =
 	{
-		-1.0f + blueOffset.x, +0.0f + blueOffset.y,
-		r, g, b,
-		-0.8f + blueOffset.x, -0.2f + blueOffset.y,
-		r, g, b,
-		+0.6f + blueOffset.x, +0.0f + blueOffset.y,
-		r, g, b,
-		+0.6f + blueOffset.x, -0.2f + blueOffset.y,
-		r, g, b,
-		+0.6f + blueOffset.x, +0.1f + blueOffset.y,
-		r, g, b,
-		+0.6f + blueOffset.x, -0.3f + blueOffset.y,
-		r, g, b,
-		+0.65f + blueOffset.x, +0.1f + blueOffset.y,
-		r, g, b,
-		+0.65f + blueOffset.x, -0.3f + blueOffset.y,
-		r, g, b,
-		+0.65f + blueOffset.x, +0.0f + blueOffset.y,
-		r, g, b,
-		+0.65f + blueOffset.x, -0.2f + blueOffset.y,
-		r, g, b,
-		+1.0f + blueOffset.x, +0.0f + blueOffset.y,
-		r, g, b,
-		+1.0f + blueOffset.x, -0.2f + blueOffset.y,
-		r, g, b,
+		-1.0f, +0.0f, color.r, color.g, color.b, offset.x, offset.y,
+		-0.8f, -0.2f, color.r, color.g, color.b, offset.x, offset.y,
+		+0.6f, +0.0f, color.r, color.g, color.b, offset.x, offset.y,
+		+0.6f, -0.2f,color.r, color.g, color.b, offset.x, offset.y,
+		+0.6f, +0.1f, color.r, color.g, color.b, offset.x, offset.y,
+		+0.6f, -0.3f, color.r, color.g, color.b, offset.x, offset.y,
+		+0.65f, +0.1f, color.r, color.g, color.b, offset.x, offset.y,
+		+0.65f, -0.3f, color.r, color.g, color.b, offset.x, offset.y,
+		+0.65f, +0.0f, color.r, color.g, color.b, offset.x, offset.y,
+		+0.65f, -0.2f, color.r, color.g, color.b, offset.x, offset.y,
+		+1.0f, +0.0f, color.r, color.g, color.b, offset.x, offset.y,
+		+1.0f, -0.2f, color.r, color.g, color.b, offset.x, offset.y,
 
-
-		-0.8f + redOffset.x, +0.5f + redOffset.y,
-		r, g, b,
-		-1.0f + redOffset.x, +0.5f + redOffset.y,
-		r, g, b,
-		-0.6f + redOffset.x, +0.8f + redOffset.y,
-		r, g, b,
+		-0.8f, +0.5f, color.r, color.g, color.b, offset.x, offset.y,
+		-1.0f, +0.5f, color.r, color.g, color.b, offset.x, offset.y,
+		-0.6f, +0.8f, color.r, color.g, color.b, offset.x, offset.y,
 	};
 
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(verts), (char*)verts);
@@ -234,10 +278,19 @@ void MeGlWindow::paintGL()
 
 	// Draw based on screen size
 	glViewport(0, 0, width(), height());
+	
+	UpdateDataToOpenGL();
+	glDrawElements(GL_TRIANGLES, 21, GL_UNSIGNED_SHORT, (char*)(NUM_TRI * TRIANGLE_BYTE_SIZE));
+
+	vec2 tempOffset = offset;
+	offset += vec2(-0.06f, 0.14f);
+	vec3 tempColor = color;
+	color = vec3(1.0, 0.0, 0.0);
 
 	UpdateDataToOpenGL();
-	// Use the indices to draw triangles (no same vertices)
 	glDrawElements(GL_TRIANGLES, 21, GL_UNSIGNED_SHORT, (char*)(NUM_TRI * TRIANGLE_BYTE_SIZE));
+	offset = tempOffset;
+	color = tempColor;
 
 	// Follow the vertex sequence to draw triangles (might have two same vertices)
 	//glDrawArrays(GL_TRIANGLES, 0, 6);
