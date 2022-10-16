@@ -63,7 +63,6 @@ void MeGlWindow::keyPressEvent(QKeyEvent* e)
 	repaint();
 }
 
-
 // Check & Print error
 bool checkStatus(
 	GLuint objectID,
@@ -98,84 +97,77 @@ bool checkProgramStatus(GLuint programID)
 	return checkStatus(programID, glGetProgramiv, glGetProgramInfoLog, GL_LINK_STATUS);
 }
 
+const uint NUM_VERTICES_PER_TRI = 3;
+const uint NUM_FLOATS_PER_VERTICE = 5; // x,y,r,g,b
+const uint TRIANGLE_BYTE_SIZE = NUM_VERTICES_PER_TRI * NUM_FLOATS_PER_VERTICE * sizeof(float);
+const uint NUM_TRI = 7;
+const uint TOTAL_IDX_BYTE_SIZE = NUM_TRI * 3 * sizeof(GLushort);
 
 void sendDataToOpenGL()
 {
-	GLfloat r = 1.0;
-	GLfloat g = 0.0;
-	GLfloat b = 0.0;
+	GLuint myBufferID;
+
+	glGenBuffers(1, &myBufferID);
+	glBindBuffer(GL_ARRAY_BUFFER, myBufferID);
+	// NULL: Fill in data later
+	glBufferData(GL_ARRAY_BUFFER, NUM_TRI * TRIANGLE_BYTE_SIZE + TOTAL_IDX_BYTE_SIZE, NULL, GL_STATIC_DRAW);
+	
+	// Position
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, 0);
+	// Color
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (char*)(sizeof(float) * 2));
+	// Index
+	GLushort indices[] = { 0, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 7, 8, 9, 10, 9, 10, 11, 12, 13, 14 };
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, myBufferID);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, NUM_TRI * TRIANGLE_BYTE_SIZE, sizeof(indices), (char*)indices);
+}
+
+void UpdateDataToOpenGL() {
+	GLfloat r = 1.0; GLfloat g = 0.0; GLfloat b = 0.0;
 
 	GLfloat verts[] =
 	{
 		-1.0f + blueOffset.x, +0.0f + blueOffset.y,
-		r,g,b,
+		r, g, b,
 		-0.8f + blueOffset.x, -0.2f + blueOffset.y,
-		r,g,b,
+		r, g, b,
 		+0.6f + blueOffset.x, +0.0f + blueOffset.y,
-		r,g,b,
+		r, g, b,
 		+0.6f + blueOffset.x, -0.2f + blueOffset.y,
-		r,g,b,
+		r, g, b,
 		+0.6f + blueOffset.x, +0.1f + blueOffset.y,
-		r,g,b,
+		r, g, b,
 		+0.6f + blueOffset.x, -0.3f + blueOffset.y,
-		r,g,b,
+		r, g, b,
 		+0.65f + blueOffset.x, +0.1f + blueOffset.y,
-		r,g,b,
+		r, g, b,
 		+0.65f + blueOffset.x, -0.3f + blueOffset.y,
-		r,g,b,
+		r, g, b,
 		+0.65f + blueOffset.x, +0.0f + blueOffset.y,
-		r,g,b,
+		r, g, b,
 		+0.65f + blueOffset.x, -0.2f + blueOffset.y,
-		r,g,b,
+		r, g, b,
 		+1.0f + blueOffset.x, +0.0f + blueOffset.y,
-		r,g,b,
+		r, g, b,
 		+1.0f + blueOffset.x, -0.2f + blueOffset.y,
-		r,g,b,
+		r, g, b,
 
 
 		-0.8f + redOffset.x, +0.5f + redOffset.y,
-		r,g,b,
+		r, g, b,
 		-1.0f + redOffset.x, +0.5f + redOffset.y,
-		r,g,b,
+		r, g, b,
 		-0.6f + redOffset.x, +0.8f + redOffset.y,
-		r,g,b,
+		r, g, b,
 	};
-	GLuint myBufferID;
 
-	// Create buffer and ref, bind, fill in data
-	glGenBuffers(1, &myBufferID);
-	glBindBuffer(GL_ARRAY_BUFFER, myBufferID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
-	
-	// Position
-	glEnableVertexAttribArray(0);
-	// (index, size(xy), type, normalized, stride, pointer)
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, 0);
-	// Color
-	glEnableVertexAttribArray(1);
-	// (index, size(rgb), type, normalized, stride, pointer)
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (char*)(sizeof(float) * 2));
-
-	//// Offset
-	//glEnableVertexAttribArray(2);
-	//// (index, size(xy), type, normalized, stride, pointer)
-	//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (char*)(sizeof(float) * 2));
-
-	// Indices to form triangles
-	GLushort indices[] = { 0, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 7, 8, 9, 10, 9, 10, 11, 12, 13, 14 };
-
-	// Create buffer and ref, bind, fill in data
-	GLuint indexBufferID;
-	glGenBuffers(1, &indexBufferID);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices),
-		indices, GL_STATIC_DRAW);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(verts), (char*)verts);
 }
-
 
 string readShaderCode(const char* fileName)
 {
-
 	// Need to include fstream
 	ifstream meInput(fileName);
 	if ( ! meInput.good())
@@ -232,11 +224,9 @@ void MeGlWindow::initializeGL()
 	installShaders();
 }
 
-// Update when something is changed (like screen size and input)
+// Update when something is changed (e.g. screen size and input)
 void MeGlWindow::paintGL()
 {
-	sendDataToOpenGL();
-
 	// Background color
 	glClearColor(0.0, 0.15, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -245,14 +235,10 @@ void MeGlWindow::paintGL()
 	// Draw based on screen size
 	glViewport(0, 0, width(), height());
 
+	UpdateDataToOpenGL();
+	// Use the indices to draw triangles (no same vertices)
+	glDrawElements(GL_TRIANGLES, 21, GL_UNSIGNED_SHORT, (char*)(NUM_TRI * TRIANGLE_BYTE_SIZE));
+
 	// Follow the vertex sequence to draw triangles (might have two same vertices)
 	//glDrawArrays(GL_TRIANGLES, 0, 6);
-
-	// Use the indices to draw triangles (no same vertices)
-	glDrawElements(GL_TRIANGLES, 21, GL_UNSIGNED_SHORT, 0);
-
-	//glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_SHORT, 0);
 }
-
-
-
