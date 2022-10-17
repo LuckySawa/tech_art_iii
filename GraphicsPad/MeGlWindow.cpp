@@ -3,6 +3,10 @@
 #include <fstream>
 #include <MeGlWindow.h>
 #include <QtGui/qkeyevent>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 using namespace std;
 
 struct vec2 {
@@ -46,6 +50,8 @@ struct vec3 {
 };
 
 vec2 offset;
+vec2 offsetA;
+vec2 offsetB;
 vec3 color = vec3(0.05, 0.0, 0.0);
 float moveSpeed = 0.01f;
 
@@ -55,28 +61,28 @@ void MeGlWindow::keyPressEvent(QKeyEvent* e)
 	switch (e->key())
 	{
 	case Qt::Key::Key_W:
-		offset += vec2(0.0f, moveSpeed);
+		offsetA += vec2(0.0f, moveSpeed);
 		break;
 	case Qt::Key::Key_A:
-		offset += vec2(-moveSpeed, 0.0f);
+		offsetA += vec2(-moveSpeed, 0.0f);
 		break;
 	case Qt::Key::Key_S:
-		offset += vec2(0.0f, -moveSpeed);
+		offsetA += vec2(0.0f, -moveSpeed);
 		break;
 	case Qt::Key::Key_D:
-		offset += vec2(moveSpeed, 0.0f);
+		offsetA += vec2(moveSpeed, 0.0f);
 		break;
 	case Qt::Key::Key_Up:
-		offset += vec2(0.0f, moveSpeed);
+		offsetB += vec2(0.0f, moveSpeed);
 		break;
 	case Qt::Key::Key_Left:
-		offset += vec2(-moveSpeed, 0.0f);
+		offsetB += vec2(-moveSpeed, 0.0f);
 		break;
 	case Qt::Key::Key_Down:
-		offset += vec2(0.0f, -moveSpeed);
+		offsetB += vec2(0.0f, -moveSpeed);
 		break;
 	case Qt::Key::Key_Right:
-		offset += vec2(moveSpeed, 0.0f);
+		offsetB += vec2(moveSpeed, 0.0f);
 		break;
 	}
 
@@ -189,22 +195,22 @@ void UpdateDataToOpenGL() {
 
 	GLfloat verts[] =
 	{
-		-1.0f, +0.0f, color.r, color.g, color.b, offset.x, offset.y,
-		-0.8f, -0.2f, color.r, color.g, color.b, offset.x, offset.y,
-		+0.6f, +0.0f, color.r, color.g, color.b, offset.x, offset.y,
-		+0.6f, -0.2f,color.r, color.g, color.b, offset.x, offset.y,
-		+0.6f, +0.1f, color.r, color.g, color.b, offset.x, offset.y,
-		+0.6f, -0.3f, color.r, color.g, color.b, offset.x, offset.y,
-		+0.65f, +0.1f, color.r, color.g, color.b, offset.x, offset.y,
-		+0.65f, -0.3f, color.r, color.g, color.b, offset.x, offset.y,
-		+0.65f, +0.0f, color.r, color.g, color.b, offset.x, offset.y,
-		+0.65f, -0.2f, color.r, color.g, color.b, offset.x, offset.y,
-		+1.0f, +0.0f, color.r, color.g, color.b, offset.x, offset.y,
-		+1.0f, -0.2f, color.r, color.g, color.b, offset.x, offset.y,
+		-1.0f, +0.0f, color.r, color.g, color.b, offsetA.x, offsetA.y,
+		-0.8f, -0.2f, color.r, color.g, color.b, offsetA.x, offsetA.y,
+		+0.6f, +0.0f, color.r, color.g, color.b, offsetA.x, offsetA.y,
+		+0.6f, -0.2f,color.r, color.g, color.b, offsetA.x, offsetA.y,
+		+0.6f, +0.1f, color.r, color.g, color.b, offsetA.x, offsetA.y,
+		+0.6f, -0.3f, color.r, color.g, color.b, offsetA.x, offsetA.y,
+		+0.65f, +0.1f, color.r, color.g, color.b, offsetA.x, offsetA.y,
+		+0.65f, -0.3f, color.r, color.g, color.b, offsetA.x, offsetA.y,
+		+0.65f, +0.0f, color.r, color.g, color.b, offsetA.x, offsetA.y,
+		+0.65f, -0.2f, color.r, color.g, color.b, offsetA.x, offsetA.y,
+		+1.0f, +0.0f, color.r, color.g, color.b, offsetA.x, offsetA.y,
+		+1.0f, -0.2f, color.r, color.g, color.b, offsetA.x, offsetA.y,
 
-		-0.8f, +0.5f, color.r, color.g, color.b, offset.x, offset.y,
-		-1.0f, +0.5f, color.r, color.g, color.b, offset.x, offset.y,
-		-0.6f, +0.8f, color.r, color.g, color.b, offset.x, offset.y,
+		-0.8f, +0.5f, color.r, color.g, color.b, offsetB.x, offsetB.y,
+		-1.0f, +0.5f, color.r, color.g, color.b, offsetB.x, offsetB.y,
+		-0.6f, +0.8f, color.r, color.g, color.b, offsetB.x, offsetB.y,
 	};
 
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(verts), (char*)verts);
@@ -279,17 +285,21 @@ void MeGlWindow::paintGL()
 	// Draw based on screen size
 	glViewport(0, 0, width(), height());
 	
+
 	UpdateDataToOpenGL();
 	glDrawElements(GL_TRIANGLES, 21, GL_UNSIGNED_SHORT, (char*)(NUM_TRI * TRIANGLE_BYTE_SIZE));
 
-	vec2 tempOffset = offset;
-	offset += vec2(-0.06f, 0.14f);
+	vec2 tempOffsetA = offsetA;
+	offsetA += vec2(-0.06f, 0.14f);
+	vec2 tempOffsetB = offsetB;
+	offsetB += vec2(-0.06f, 0.14f);
 	vec3 tempColor = color;
 	color = vec3(1.0, 0.0, 0.0);
 
 	UpdateDataToOpenGL();
 	glDrawElements(GL_TRIANGLES, 21, GL_UNSIGNED_SHORT, (char*)(NUM_TRI * TRIANGLE_BYTE_SIZE));
-	offset = tempOffset;
+	offsetA = tempOffsetA;
+	offsetB = tempOffsetB;
 	color = tempColor;
 
 	// Follow the vertex sequence to draw triangles (might have two same vertices)
