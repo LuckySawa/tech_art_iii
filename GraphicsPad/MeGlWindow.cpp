@@ -4,9 +4,9 @@
 #include <MeGlWindow.h>
 #include <QtGui/qkeyevent>
 
-//#include <glm/glm.hpp>
-//#include <glm/gtc/matrix_transform.hpp>
-//#include <glm/gtc/type_ptr.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 using namespace std;
 
 struct vec2 {
@@ -55,6 +55,9 @@ vec2 offsetB;
 vec3 color = vec3(0.05, 0.0, 0.0);
 float moveSpeed = 0.01f;
 
+
+
+
 // For WASD input
 void MeGlWindow::keyPressEvent(QKeyEvent* e)
 {
@@ -89,6 +92,9 @@ void MeGlWindow::keyPressEvent(QKeyEvent* e)
 	repaint();
 }
 
+
+
+
 // Check & Print error
 bool checkStatus(
 	GLuint objectID,
@@ -122,6 +128,9 @@ bool checkProgramStatus(GLuint programID)
 {
 	return checkStatus(programID, glGetProgramiv, glGetProgramInfoLog, GL_LINK_STATUS);
 }
+
+
+
 
 const uint NUM_VERTICES_PER_TRI = 3;
 const uint NUM_FLOATS_PER_VERTICE = 7; // x,y,r,g,b,offsetX, offsetY
@@ -158,41 +167,6 @@ void sendDataToOpenGL()
 }
 
 void UpdateDataToOpenGL() {
-	//GLfloat verts[] =
-	//{
-	//	-1.0f, +0.0f,
-	//	r, g, b,
-	//	-0.8f, -0.2f,
-	//	r, g, b,
-	//	+0.6f, +0.0f,
-	//	r, g, b,
-	//	+0.6f, -0.2f,
-	//	r, g, b,
-	//	+0.6f, +0.1f,
-	//	r, g, b,
-	//	+0.6f, -0.3f,
-	//	r, g, b,
-	//	+0.65f, +0.1f,
-	//	r, g, b,
-	//	+0.65f, -0.3f,
-	//	r, g, b,
-	//	+0.65f, +0.0f,
-	//	r, g, b,
-	//	+0.65f, -0.2f,
-	//	r, g, b,
-	//	+1.0f, +0.0f,
-	//	r, g, b,
-	//	+1.0f, -0.2f,
-	//	r, g, b,
-
-	//	-0.8f, +0.5f,
-	//	r, g, b,
-	//	-1.0f, +0.5f,
-	//	r, g, b,
-	//	-0.6f, +0.8f,
-	//	r, g, b,
-	//};
-
 	GLfloat verts[] =
 	{
 		-1.0f, +0.0f, color.r, color.g, color.b, offsetA.x, offsetA.y,
