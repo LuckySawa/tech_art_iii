@@ -3,12 +3,13 @@
 #include <fstream>
 #include <MeGlWindow.h>
 #include <QtGui/qkeyevent>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
 using namespace std;
 
+#pragma region Input
 struct vec2 {
 	float x, y;
 
@@ -55,9 +56,6 @@ vec2 offsetB;
 vec3 color = vec3(0.05, 0.0, 0.0);
 float moveSpeed = 0.01f;
 
-
-
-
 // For WASD input
 void MeGlWindow::keyPressEvent(QKeyEvent* e)
 {
@@ -91,10 +89,9 @@ void MeGlWindow::keyPressEvent(QKeyEvent* e)
 
 	repaint();
 }
+#pragma endregion
 
-
-
-
+#pragma region Shader
 // Check & Print error
 bool checkStatus(
 	GLuint objectID,
@@ -128,6 +125,58 @@ bool checkProgramStatus(GLuint programID)
 {
 	return checkStatus(programID, glGetProgramiv, glGetProgramInfoLog, GL_LINK_STATUS);
 }
+
+string readShaderCode(const char* fileName)
+{
+	// Need to include fstream
+	ifstream meInput(fileName);
+	if (!meInput.good())
+	{
+		cout << "File failed to load..." << fileName;
+		exit(1);
+	}
+	return std::string(
+		std::istreambuf_iterator<char>(meInput),
+		std::istreambuf_iterator<char>());
+}
+
+void installShaders()
+{
+	// Handle, like a pointer
+	GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+	GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
+	const GLchar* adapter[1];
+	// Can't use .c_str() directly
+	string temp = readShaderCode("VertexShaderCode.glsl");
+	adapter[0] = temp.c_str();
+	// Set shader source to shader handle
+	glShaderSource(vertexShaderID, 1, adapter, 0);
+	temp = readShaderCode("FragmentShaderCode.glsl");
+	adapter[0] = temp.c_str();
+	glShaderSource(fragmentShaderID, 1, adapter, 0);
+
+	glCompileShader(vertexShaderID);
+	glCompileShader(fragmentShaderID);
+
+	// Check & Print error
+	if (!checkShaderStatus(vertexShaderID) || !checkShaderStatus(fragmentShaderID))
+		return;
+
+	// Program setup
+	GLuint programID = glCreateProgram();
+	glAttachShader(programID, vertexShaderID);
+	glAttachShader(programID, fragmentShaderID);
+	glLinkProgram(programID);
+
+	// Check & Print error
+	if (!checkProgramStatus(programID))
+		return;
+
+	glUseProgram(programID);
+}
+
+#pragma endregion
 
 
 
@@ -190,55 +239,7 @@ void UpdateDataToOpenGL() {
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(verts), (char*)verts);
 }
 
-string readShaderCode(const char* fileName)
-{
-	// Need to include fstream
-	ifstream meInput(fileName);
-	if ( ! meInput.good())
-	{
-		cout << "File failed to load..." << fileName;
-		exit(1);
-	}
-	return std::string(
-		std::istreambuf_iterator<char>(meInput),
-		std::istreambuf_iterator<char>());
-}
 
-void installShaders()
-{
-	// Handle, like a pointer
-	GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-	GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-
-	const GLchar* adapter[1];
-	// Can't use .c_str() directly
-	string temp = readShaderCode("VertexShaderCode.glsl");
-	adapter[0] = temp.c_str();
-	// Set shader source to shader handle
-	glShaderSource(vertexShaderID, 1, adapter, 0);
-	temp = readShaderCode("FragmentShaderCode.glsl");
-	adapter[0] = temp.c_str();
-	glShaderSource(fragmentShaderID, 1, adapter, 0);
-
-	glCompileShader(vertexShaderID);
-	glCompileShader(fragmentShaderID);
-
-	// Check & Print error
-	if( ! checkShaderStatus(vertexShaderID) || ! checkShaderStatus(fragmentShaderID))
-		return;
-
-	// Program setup
-	GLuint programID = glCreateProgram();
-	glAttachShader(programID, vertexShaderID);
-	glAttachShader(programID, fragmentShaderID);
-	glLinkProgram(programID);
-
-	// Check & Print error
-	if ( ! checkProgramStatus(programID))
-		return;
-
-	glUseProgram(programID);
-}
 
 // Overall flow
 void MeGlWindow::initializeGL()
