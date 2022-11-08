@@ -6,8 +6,14 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <Primitives\Vertex.h>
+#include <Primitives\ShapeGenerator.h>
 
 using namespace std;
+using glm::mat4;
+using glm::vec3;
+
+GLuint programID;
 
 #pragma region Input
 struct vec2 {
@@ -28,33 +34,13 @@ struct vec2 {
 		return v;
 	}
 };
-struct vec3 {
-	float r, g, b;
-
-	vec3() { r = 0; g = 0; b = 0; };
-	vec3(float vr, float vg, float vb) {
-		r = vr;
-		g = vg;
-		b = vb;
-	}
-	vec3 operator += (vec3 vec) {
-		vec3 v;
-		r = r + vec.r;
-		g = g + vec.g;
-		b = b + vec.b;
-		v.r = r;
-		v.g = g;
-		v.b = b;
-
-		return v;
-	}
-};
-
 vec2 offset;
 vec2 offsetA;
 vec2 offsetB;
 vec3 color = vec3(0.05, 0.0, 0.0);
+float rotation;
 float moveSpeed = 0.01f;
+float rotateSpeed = 0.01f;
 
 // For WASD input
 void MeGlWindow::keyPressEvent(QKeyEvent* e)
@@ -84,6 +70,13 @@ void MeGlWindow::keyPressEvent(QKeyEvent* e)
 		break;
 	case Qt::Key::Key_Right:
 		offsetB += vec2(moveSpeed, 0.0f);
+		break;
+
+	case Qt::Key::Key_Q:
+		rotation += rotateSpeed;
+		break;
+	case Qt::Key::Key_E:
+		rotation -= rotateSpeed;
 		break;
 	}
 
@@ -164,7 +157,7 @@ void installShaders()
 		return;
 
 	// Program setup
-	GLuint programID = glCreateProgram();
+	programID = glCreateProgram();
 	glAttachShader(programID, vertexShaderID);
 	glAttachShader(programID, fragmentShaderID);
 	glLinkProgram(programID);
@@ -188,31 +181,59 @@ const uint NUM_TRI = 7;
 const uint TOTAL_IDX_BYTE_SIZE = NUM_TRI * 3 * sizeof(GLushort);
 
 
+GLuint indiceNum;
+
 void sendDataToOpenGL()
 {
+	//glGenBuffers(1, &myBufferID);
+	//glBindBuffer(GL_ARRAY_BUFFER, myBufferID);
+	//// NULL: Fill in data later
+	//glBufferData(GL_ARRAY_BUFFER, NUM_TRI * TRIANGLE_BYTE_SIZE + TOTAL_IDX_BYTE_SIZE, NULL, GL_STATIC_DRAW);
+
+	//// Position
+	//glEnableVertexAttribArray(0);
+	//glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 7, 0);
+	//// Color
+	//glEnableVertexAttribArray(1);
+	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 7, (char*)(sizeof(float) * 2));
+	//// Offset
+	//glEnableVertexAttribArray(2);
+	//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 7, (char*)(sizeof(float) * 5));
+
+	//// Triangle
+	////glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(verts), (char*)verts);
+	//// Index
+	//GLushort indices[] = { 0, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 7, 8, 9, 10, 9, 10, 11, 12, 13, 14 };
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, myBufferID);
+	//glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, NUM_TRI * TRIANGLE_BYTE_SIZE, sizeof(indices), (char*)indices);
+
+
+
 	GLuint myBufferID;
+	ShapeData shape = ShapeGenerator::makeCube();
 
 	glGenBuffers(1, &myBufferID);
 	glBindBuffer(GL_ARRAY_BUFFER, myBufferID);
+
 	// NULL: Fill in data later
-	glBufferData(GL_ARRAY_BUFFER, NUM_TRI * TRIANGLE_BYTE_SIZE + TOTAL_IDX_BYTE_SIZE, NULL, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, shape.vertexBufferSize() + shape.indexBufferSize(), shape.vertices, GL_STATIC_DRAW);
+	//glBufferData(GL_ARRAY_BUFFER, NUM_TRI * TRIANGLE_BYTE_SIZE + TOTAL_IDX_BYTE_SIZE, NULL, GL_STATIC_DRAW);
 
 	// Position
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 7, 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, 0);
 	// Color
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 7, (char*)(sizeof(float) * 2));
-	// Offset
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 7, (char*)(sizeof(float) * 5));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (char*)(sizeof(float) * 3));
 
-	// Triangle
-	//glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(verts), (char*)verts);
-	// Index
-	GLushort indices[] = { 0, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 7, 8, 9, 10, 9, 10, 11, 12, 13, 14 };
+
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, myBufferID);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, NUM_TRI * TRIANGLE_BYTE_SIZE, sizeof(indices), (char*)indices);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, shape.indexBufferSize(), shape.indices, GL_STATIC_DRAW);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, shape.vertexBufferSize(), shape.indexBufferSize(), (char*)shape.indices);
+	//glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, NUM_TRI * TRIANGLE_BYTE_SIZE, sizeof(indices), (char*)indices);
+	indiceNum = shape.numIndices;
+
+	shape.cleanup();
 }
 
 void UpdateDataToOpenGL() {
@@ -249,9 +270,32 @@ void MeGlWindow::initializeGL()
 	installShaders();
 }
 
-// Update when something is changed (e.g. screen size and input)
+// Update
 void MeGlWindow::paintGL()
 {
+	//UpdateDataToOpenGL();
+	//glDrawElements(GL_TRIANGLES, 21, GL_UNSIGNED_SHORT, (char*)(NUM_TRI * TRIANGLE_BYTE_SIZE));
+
+	//vec2 tempOffsetA = offsetA;
+	//offsetA += vec2(-0.06f, 0.14f);
+	//vec2 tempOffsetB = offsetB;
+	//offsetB += vec2(-0.06f, 0.14f);
+	//vec3 tempColor = color;
+	//color = vec3(1.0, 0.0, 0.0);
+
+	//UpdateDataToOpenGL();
+	//glDrawElements(GL_TRIANGLES, 21, GL_UNSIGNED_SHORT, (char*)(NUM_TRI * TRIANGLE_BYTE_SIZE));
+	//offsetA = tempOffsetA;
+	//offsetB = tempOffsetB;
+	//color = tempColor;
+
+	// Follow the vertex sequence to draw triangles (might have two same vertices)
+	//glDrawArrays(GL_TRIANGLES, 0, 6);
+
+
+
+
+
 	// Background color
 	glClearColor(0.0, 0.15, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -259,24 +303,19 @@ void MeGlWindow::paintGL()
 
 	// Draw based on screen size
 	glViewport(0, 0, width(), height());
-	
 
-	UpdateDataToOpenGL();
-	glDrawElements(GL_TRIANGLES, 21, GL_UNSIGNED_SHORT, (char*)(NUM_TRI * TRIANGLE_BYTE_SIZE));
+	// Matrix calculation
+	mat4 translationMatrix = glm::translate(mat4(), vec3(0.0f, 0.0f, -5.0f));
+	mat4 rotationMatrix = glm::rotate(mat4(), 54.0f + rotation, vec3(1.0f, 0.0f, 0.0f));
+	mat4 projectionMatrix = glm::perspective(60.0f, ((float)width()) / height(), 0.1f, 10.0f);
 
-	vec2 tempOffsetA = offsetA;
-	offsetA += vec2(-0.06f, 0.14f);
-	vec2 tempOffsetB = offsetB;
-	offsetB += vec2(-0.06f, 0.14f);
-	vec3 tempColor = color;
-	color = vec3(1.0, 0.0, 0.0);
+	mat4 myTransformMatrix = projectionMatrix * translationMatrix * rotationMatrix;
 
-	UpdateDataToOpenGL();
-	glDrawElements(GL_TRIANGLES, 21, GL_UNSIGNED_SHORT, (char*)(NUM_TRI * TRIANGLE_BYTE_SIZE));
-	offsetA = tempOffsetA;
-	offsetB = tempOffsetB;
-	color = tempColor;
+	GLint myTransformMatrixUniformLocation =
+		glGetUniformLocation(programID, "myTransformMatrix");
 
-	// Follow the vertex sequence to draw triangles (might have two same vertices)
-	//glDrawArrays(GL_TRIANGLES, 0, 6);
+	glUniformMatrix4fv(myTransformMatrixUniformLocation, 1, GL_FALSE, &myTransformMatrix[0][0]);
+
+	// Update frame
+	glDrawElements(GL_TRIANGLES, indiceNum, GL_UNSIGNED_SHORT, (char*)indiceNum);
 }

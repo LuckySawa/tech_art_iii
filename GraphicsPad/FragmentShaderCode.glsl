@@ -1,7 +1,7 @@
 #version 430
 
 in vec3 vColor;
-in vec2 vPosition;
+in vec4 vPosition;
 
 out vec4 finalColor;
 
