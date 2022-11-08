@@ -40,7 +40,7 @@ vec2 offsetB;
 vec3 color = vec3(0.05, 0.0, 0.0);
 float rotation;
 float moveSpeed = 0.01f;
-float rotateSpeed = 0.01f;
+float rotateSpeed = 1.0f;
 
 // For WASD input
 void MeGlWindow::keyPressEvent(QKeyEvent* e)
@@ -192,6 +192,7 @@ void PrintMatrix(mat4 myTransformMatrix) {
 
 
 GLuint indiceNum;
+ShapeData shape;
 
 void sendDataToOpenGL()
 {
@@ -221,7 +222,7 @@ void sendDataToOpenGL()
 
 
 
-	ShapeData shape = ShapeGenerator::makeCube();
+	shape = ShapeGenerator::makeCube();
 
 	GLuint myBufferID;
 	glGenBuffers(1, &myBufferID);
@@ -245,30 +246,8 @@ void sendDataToOpenGL()
 
 	indiceNum = shape.numIndices;
 
-	shape.cleanup();
-
-
-
-
-	//ShapeData shape = ShapeGenerator::makeCube();
-
-	//GLuint vertexBufferID;
-	//glGenBuffers(1, &vertexBufferID);
-	//glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-	//glBufferData(GL_ARRAY_BUFFER, shape.vertexBufferSize(), shape.vertices, GL_STATIC_DRAW);
-	//glEnableVertexAttribArray(0);
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, 0);
-	//glEnableVertexAttribArray(1);
-	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (char*)(sizeof(float) * 3));
-
-	//GLuint indexArrayBufferID;
-	//glGenBuffers(1, &indexArrayBufferID);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexArrayBufferID);
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, shape.indexBufferSize(), shape.indices, GL_STATIC_DRAW);
-
-	//indiceNum = shape.numIndices;
-
-	//shape.cleanup();
+	cout << indiceNum << endl;
+	cout << shape.numVertices << endl;
 }
 
 void UpdateDataToOpenGL() {
@@ -301,6 +280,7 @@ void UpdateDataToOpenGL() {
 void MeGlWindow::initializeGL()
 {
 	glewInit();
+	glEnable(GL_DEPTH_TEST);
 	sendDataToOpenGL();
 	installShaders();
 }
@@ -333,14 +313,14 @@ void MeGlWindow::paintGL()
 
 	// Background color
 	glClearColor(0.0, 0.15, 0.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glFlush();
 
 	// Draw based on screen size
 	glViewport(0, 0, width(), height());
 
 	// Matrix calculation
-	mat4 translationMatrix = glm::translate(mat4(), vec3(0.0f, 0.0f, -5.0f));
+	mat4 translationMatrix = glm::translate(mat4(), vec3(0.0f, 0.0f, -8.0f));
 	mat4 rotationMatrix = glm::rotate(mat4(), 54.0f + rotation, vec3(1.0f, 0.0f, 0.0f));
 	mat4 projectionMatrix = glm::perspective(60.0f, ((float)width()) / height(), 0.1f, 10.0f);
 
@@ -352,7 +332,7 @@ void MeGlWindow::paintGL()
 	glUniformMatrix4fv(myTransformMatrixUniformLocation, 1, GL_FALSE, &myTransformMatrix[0][0]);
 
 	// Update frame
-	glDrawElements(GL_TRIANGLES, indiceNum, GL_UNSIGNED_SHORT, (char*)indiceNum);
+	glDrawElements(GL_TRIANGLES, indiceNum, GL_UNSIGNED_SHORT, (char*)(shape.vertexBufferSize()));
 
 
 

@@ -2,7 +2,7 @@
 
 in layout(location=0) vec3 position;
 in layout(location=1) vec3 vertexColor;
-in layout(location=2) vec2 offset;
+//in layout(location=2) vec2 offset;
 
 uniform mat4 myTransformMatrix;
 
