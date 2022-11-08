@@ -171,14 +171,24 @@ void installShaders()
 
 #pragma endregion
 
+#pragma region DebugFunctions
+void PrintMatrix(mat4 myTransformMatrix) {
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++) {
+			cout << myTransformMatrix[i][j] << ',';
+		}
+		cout << endl;
+	}
+}
+#pragma endregion
 
 
-
-const uint NUM_VERTICES_PER_TRI = 3;
-const uint NUM_FLOATS_PER_VERTICE = 7; // x,y,r,g,b,offsetX, offsetY
-const uint TRIANGLE_BYTE_SIZE = NUM_VERTICES_PER_TRI * NUM_FLOATS_PER_VERTICE * sizeof(float);
-const uint NUM_TRI = 7;
-const uint TOTAL_IDX_BYTE_SIZE = NUM_TRI * 3 * sizeof(GLushort);
+//const uint NUM_VERTICES_PER_TRI = 3;
+//const uint NUM_FLOATS_PER_VERTICE = 7; // x,y,r,g,b,offsetX, offsetY
+//const uint TRIANGLE_BYTE_SIZE = NUM_VERTICES_PER_TRI * NUM_FLOATS_PER_VERTICE * sizeof(float);
+//const uint NUM_TRI = 7;
+//const uint TOTAL_IDX_BYTE_SIZE = NUM_TRI * 3 * sizeof(GLushort);
 
 
 GLuint indiceNum;
@@ -209,15 +219,15 @@ void sendDataToOpenGL()
 
 
 
-	GLuint myBufferID;
+
+
 	ShapeData shape = ShapeGenerator::makeCube();
 
+	GLuint myBufferID;
 	glGenBuffers(1, &myBufferID);
-	glBindBuffer(GL_ARRAY_BUFFER, myBufferID);
 
-	// NULL: Fill in data later
-	glBufferData(GL_ARRAY_BUFFER, shape.vertexBufferSize() + shape.indexBufferSize(), shape.vertices, GL_STATIC_DRAW);
-	//glBufferData(GL_ARRAY_BUFFER, NUM_TRI * TRIANGLE_BYTE_SIZE + TOTAL_IDX_BYTE_SIZE, NULL, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, myBufferID);
+	glBufferData(GL_ARRAY_BUFFER, shape.vertexBufferSize() + shape.indexBufferSize(), NULL, GL_STATIC_DRAW);
 
 	// Position
 	glEnableVertexAttribArray(0);
@@ -226,14 +236,39 @@ void sendDataToOpenGL()
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (char*)(sizeof(float) * 3));
 
+	//glBufferData(GL_ARRAY_BUFFER, shape.vertexBufferSize() + shape.indexBufferSize(), shape.vertices, GL_STATIC_DRAW);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, shape.vertexBufferSize(), (char*)shape.vertices);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, myBufferID);
 	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, shape.indexBufferSize(), shape.indices, GL_STATIC_DRAW);
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, shape.vertexBufferSize(), shape.indexBufferSize(), (char*)shape.indices);
-	//glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, NUM_TRI * TRIANGLE_BYTE_SIZE, sizeof(indices), (char*)indices);
+
 	indiceNum = shape.numIndices;
 
 	shape.cleanup();
+
+
+
+
+	//ShapeData shape = ShapeGenerator::makeCube();
+
+	//GLuint vertexBufferID;
+	//glGenBuffers(1, &vertexBufferID);
+	//glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
+	//glBufferData(GL_ARRAY_BUFFER, shape.vertexBufferSize(), shape.vertices, GL_STATIC_DRAW);
+	//glEnableVertexAttribArray(0);
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, 0);
+	//glEnableVertexAttribArray(1);
+	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (char*)(sizeof(float) * 3));
+
+	//GLuint indexArrayBufferID;
+	//glGenBuffers(1, &indexArrayBufferID);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexArrayBufferID);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, shape.indexBufferSize(), shape.indices, GL_STATIC_DRAW);
+
+	//indiceNum = shape.numIndices;
+
+	//shape.cleanup();
 }
 
 void UpdateDataToOpenGL() {
@@ -318,4 +353,8 @@ void MeGlWindow::paintGL()
 
 	// Update frame
 	glDrawElements(GL_TRIANGLES, indiceNum, GL_UNSIGNED_SHORT, (char*)indiceNum);
+
+
+
+	PrintMatrix(myTransformMatrix);
 }
