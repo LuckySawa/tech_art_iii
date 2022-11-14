@@ -1,9 +1,26 @@
 #version 430
 
 out vec4 daColor;
-in vec3 theColor;
+in vec3 normalWorld;
+in vec3 vertexPositionWorld;
+
+uniform vec3 lightPositionWorld;
+uniform vec3 eyePositionWorld;
+uniform vec4 ambientLight;
 
 void main()
 {
-	daColor = vec4(theColor, 1.0);
+	// Diffuse
+	vec3 lightVectorWorld = normalize(lightPositionWorld - vertexPositionWorld);
+	float brightness = max(dot(lightVectorWorld, normalize(normalWorld)),0.0);
+	vec4 diffuseLight = vec4(brightness, brightness, brightness, 1.0);
+
+	// Specular
+	vec3 reflectedLightVectorWorld = reflect(-lightVectorWorld, normalWorld);
+	vec3 eyeVectorWorld = normalize(eyePositionWorld - vertexPositionWorld);
+	float s = max(dot(reflectedLightVectorWorld, eyeVectorWorld),0.0);
+	s = pow(s, 50);
+	vec4 specularLight = vec4(0.05, 0.04, 1, 1) * s;
+
+	daColor = vec4(ambientLight.xyz + clamp(diffuseLight, 0, 1).xyz + specularLight.xyz, 1.0);
 }
