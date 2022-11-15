@@ -114,8 +114,8 @@ void MeGlWindow::paintGL()
 	GLuint fullTransformationUniformLocation;
 	GLuint modelToWorldMatrixUniformLocation;
 
-	glm::vec3 lightPositionWorld(0.0f, 1.5f, 0.0f);
-	lightPositionWorld += lightPos;
+	glm::vec3 lightPositionWorld(0.0f, 1.0f, 0.0f);
+	
 	glUseProgram(programID);
 	GLint ambientLightUniformLocation = glGetUniformLocation(programID, "ambientLight");
 	vec4 ambientLight(0.1f, 0.05f, 0.0f, 1.0f);
