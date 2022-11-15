@@ -30,14 +30,20 @@ GLuint theBufferID;
 
 GLuint planeNumIndices;
 GLuint torusNumIndices;
+GLuint arrowNumIndices;
+GLuint cubeNumIndices;
 
 
 GLuint planeVertexArrayObjectID;
 GLuint torusVertexArrayObjectID;
+GLuint arrowVertexArrayObjectID;
+GLuint cubeVertexArrayObjectID;
 
 
 GLuint planeIndexByteOffset;
 GLuint torusIndexByteOffset;
+GLuint arrowIndexByteOffset;
+GLuint cubeIndexByteOffset;
 
 vec3 lightPos = vec3(0.0, 3.0, 0.0);
 
@@ -45,33 +51,57 @@ void MeGlWindow::sendDataToOpenGL()
 {
 	ShapeData plane = ShapeGenerator::makePlane();
 	ShapeData torus = ShapeGenerator::makeTorus();
+	ShapeData arrow = ShapeGenerator::makeArrow();
+	ShapeData cube = ShapeGenerator::makeCube();
+
 
 	glGenBuffers(1, &theBufferID);
 	glBindBuffer(GL_ARRAY_BUFFER, theBufferID);
 	glBufferData(GL_ARRAY_BUFFER, 
 		plane.vertexBufferSize() + plane.indexBufferSize() +
-		torus.vertexBufferSize() + torus.indexBufferSize(), 0, GL_STATIC_DRAW);
+		torus.vertexBufferSize() + torus.indexBufferSize() + 
+		arrow.vertexBufferSize() + arrow.indexBufferSize() +
+		cube.vertexBufferSize() + cube.indexBufferSize(),
+		0, GL_STATIC_DRAW);
 
 	GLsizeiptr currentOffset = 0;
 	
+
 	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, plane.vertexBufferSize(), plane.vertices);
 	currentOffset += plane.vertexBufferSize();
 	planeIndexByteOffset = currentOffset;
 	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, plane.indexBufferSize(), plane.indices);
 	currentOffset += plane.indexBufferSize();
+
 	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, torus.vertexBufferSize(), torus.vertices);
 	currentOffset += torus.vertexBufferSize();
 	torusIndexByteOffset = currentOffset;
 	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, torus.indexBufferSize(), torus.indices);
 	currentOffset += torus.indexBufferSize();
 
+	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, arrow.vertexBufferSize(), arrow.vertices);
+	currentOffset += arrow.vertexBufferSize();
+	arrowIndexByteOffset = currentOffset;
+	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, arrow.indexBufferSize(), arrow.indices);
+	currentOffset += arrow.indexBufferSize();
+
+	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, cube.vertexBufferSize(), cube.vertices);
+	currentOffset += cube.vertexBufferSize();
+	cubeIndexByteOffset = currentOffset;
+	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, cube.indexBufferSize(), cube.indices);
+	currentOffset += cube.indexBufferSize();
+
 
 	planeNumIndices = plane.numIndices;
 	torusNumIndices = torus.numIndices;
+	arrowNumIndices = arrow.numIndices;
+	cubeNumIndices = cube.numIndices;
 
 
 	glGenVertexArrays(1, &planeVertexArrayObjectID);
 	glGenVertexArrays(1, &torusVertexArrayObjectID);
+	glGenVertexArrays(1, &arrowVertexArrayObjectID);
+	glGenVertexArrays(1, &cubeVertexArrayObjectID);
 
 	// Plane
 	glBindVertexArray(planeVertexArrayObjectID);
@@ -96,9 +126,35 @@ void MeGlWindow::sendDataToOpenGL()
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(torusByteOffset + sizeof(float) * 6));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, theBufferID);
 
+	// Arrow
+	GLuint arrowByteOffset = torusByteOffset + torus.vertexBufferSize() + torus.indexBufferSize();
+	glBindVertexArray(arrowVertexArrayObjectID);
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
+	glBindBuffer(GL_ARRAY_BUFFER, theBufferID);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(sizeof(float) * 3));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(sizeof(float) * 6));
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, theBufferID);
+
+	// Cube
+	GLuint cubeByteOffset = arrowByteOffset + arrow.vertexBufferSize() + arrow.indexBufferSize();
+	glBindVertexArray(cubeVertexArrayObjectID);
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
+	glBindBuffer(GL_ARRAY_BUFFER, theBufferID);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(sizeof(float) * 3));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(sizeof(float) * 6));
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, theBufferID);
+
 
 	plane.cleanup();
 	torus.cleanup();
+	arrow.cleanup();
+	cube.cleanup();
 }
 
 void MeGlWindow::paintGL()
@@ -141,12 +197,27 @@ void MeGlWindow::paintGL()
 
 	// Torus
 	glBindVertexArray(torusVertexArrayObjectID);
-	mat4 torusModelToWorldMatrix = glm::translate(1.0f, 0.5f, 2.0f);
+	mat4 torusModelToWorldMatrix = glm::translate(2.0f, 0.5f, 2.0f);
 	modelToProjectionMatrix = worldToProjectionMatrix * torusModelToWorldMatrix;
 	glUniformMatrix4fv(fullTransformationUniformLocation, 1, GL_FALSE, &modelToProjectionMatrix[0][0]);
-	glUniformMatrix4fv(modelToWorldMatrixUniformLocation, 1, GL_FALSE,
-		&torusModelToWorldMatrix[0][0]);
+	glUniformMatrix4fv(modelToWorldMatrixUniformLocation, 1, GL_FALSE, &torusModelToWorldMatrix[0][0]);
 	glDrawElements(GL_TRIANGLES, torusNumIndices, GL_UNSIGNED_SHORT, (void*)torusIndexByteOffset);
+
+	//// arrow
+	glBindVertexArray(arrowVertexArrayObjectID);
+	mat4 arrowModelToWorldMatrix = glm::translate(3.0f, 2.0f, 2.0f);
+	modelToProjectionMatrix = worldToProjectionMatrix * arrowModelToWorldMatrix;
+	glUniformMatrix4fv(fullTransformationUniformLocation, 1, GL_FALSE, &modelToProjectionMatrix[0][0]);
+	glUniformMatrix4fv(modelToWorldMatrixUniformLocation, 1, GL_FALSE, &arrowModelToWorldMatrix[0][0]);
+	//glDrawElements(GL_TRIANGLES, arrowNumIndices, GL_UNSIGNED_SHORT, (void*)arrowIndexByteOffset);
+
+	// cube
+	glBindVertexArray(cubeVertexArrayObjectID);
+	mat4 cubeModelToWorldMatrix = glm::translate(3.0f, 1.0f, 3.0f);
+	modelToProjectionMatrix = worldToProjectionMatrix * cubeModelToWorldMatrix;
+	glUniformMatrix4fv(fullTransformationUniformLocation, 1, GL_FALSE, &modelToProjectionMatrix[0][0]);
+	glUniformMatrix4fv(modelToWorldMatrixUniformLocation, 1, GL_FALSE, &cubeModelToWorldMatrix[0][0]);
+	glDrawElements(GL_TRIANGLES, cubeNumIndices, GL_UNSIGNED_SHORT, (void*)cubeIndexByteOffset);
 }
 
 void MeGlWindow::mouseMoveEvent(QMouseEvent* e)
