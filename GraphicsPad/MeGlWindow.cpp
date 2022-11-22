@@ -111,27 +111,6 @@ void MeGlWindow::sendDataToOpenGL()
 	FillInBuffer(arrow, &currentOffset, &arrowIndexByteOffset);
 	FillInBuffer(cube, &currentOffset, &cubeIndexByteOffset);
 
-	//glBufferSubData(GL_ARRAY_BUFFER, currentOffset, plane.vertexBufferSize(), plane.vertices);
-	//currentOffset += plane.vertexBufferSize();
-	//planeIndexByteOffset = currentOffset;
-	//glBufferSubData(GL_ARRAY_BUFFER, currentOffset, plane.indexBufferSize(), plane.indices);
-	//currentOffset += plane.indexBufferSize();
-	//glBufferSubData(GL_ARRAY_BUFFER, currentOffset, torus.vertexBufferSize(), torus.vertices);
-	//currentOffset += torus.vertexBufferSize();
-	//torusIndexByteOffset = currentOffset;
-	//glBufferSubData(GL_ARRAY_BUFFER, currentOffset, torus.indexBufferSize(), torus.indices);
-	//currentOffset += torus.indexBufferSize();
-	//glBufferSubData(GL_ARRAY_BUFFER, currentOffset, arrow.vertexBufferSize(), arrow.vertices);
-	//currentOffset += arrow.vertexBufferSize();
-	//arrowIndexByteOffset = currentOffset;
-	//glBufferSubData(GL_ARRAY_BUFFER, currentOffset, arrow.indexBufferSize(), arrow.indices);
-	//currentOffset += arrow.indexBufferSize();
-	//glBufferSubData(GL_ARRAY_BUFFER, currentOffset, cube.vertexBufferSize(), cube.vertices);
-	//currentOffset += cube.vertexBufferSize();
-	//cubeIndexByteOffset = currentOffset;
-	//glBufferSubData(GL_ARRAY_BUFFER, currentOffset, cube.indexBufferSize(), cube.indices);
-	//currentOffset += cube.indexBufferSize();
-
 
 	planeNumIndices = plane.numIndices;
 	torusNumIndices = torus.numIndices;
@@ -192,6 +171,7 @@ void MeGlWindow::paintGL()
 	mat4 planeModelToWorldMatrix;
 	TransformShape(planeVertexArrayObjectID, worldToProjectionMatrix, planeModelToWorldMatrix, planeIndexByteOffset, planeNumIndices,
 		fullTransformationUniformLocation, modelToWorldMatrixUniformLocation);
+
 	// Three spheres, different positions and scales
 	mat4 torusModelToWorldMatrix = glm::translate(2.0f, 0.5f, 0.0f);
 	TransformShape(torusVertexArrayObjectID, worldToProjectionMatrix, torusModelToWorldMatrix, torusIndexByteOffset, torusNumIndices,
@@ -210,8 +190,11 @@ void MeGlWindow::paintGL()
 	TransformShape(arrowVertexArrayObjectID, worldToProjectionMatrix, arrowModelToWorldMatrix, arrowIndexByteOffset, arrowNumIndices,
 		fullTransformationUniformLocation, modelToWorldMatrixUniformLocation);
 
-	arrowModelToWorldMatrix = glm::rotate(arrowModelToWorldMatrix, glm::radians(1145.0f), glm::vec3(0.0, 1.0, 0.0));
-	arrowModelToWorldMatrix = glm::scale(arrowModelToWorldMatrix, glm::vec3(0.7, 0.5, 2.0));
+	//arrowModelToWorldMatrix = glm::translate(0.0f, 0.0f, 0.0f);
+	arrowModelToWorldMatrix = glm::rotate(arrowModelToWorldMatrix, 45.0f, glm::vec3(0.0, 1.0, 0.0));
+	arrowModelToWorldMatrix = glm::scale(arrowModelToWorldMatrix, glm::vec3(1.0, 1.0, 2.0));
+	//arrowModelToWorldMatrix = glm::translate(arrowModelToWorldMatrix, 0.0f, 1.0f, 1.2f);
+	
 	TransformShape(arrowVertexArrayObjectID, worldToProjectionMatrix, arrowModelToWorldMatrix, arrowIndexByteOffset, arrowNumIndices,
 		fullTransformationUniformLocation, modelToWorldMatrixUniformLocation);
 
@@ -222,6 +205,18 @@ void MeGlWindow::paintGL()
 
 	cubeModelToWorldMatrix = glm::rotate(cubeModelToWorldMatrix, glm::radians(1530.0f), glm::vec3(0.0, 1.0, 0.0));
 	cubeModelToWorldMatrix = glm::scale(cubeModelToWorldMatrix, glm::vec3(0.7,0.5,2.0));
+	TransformShape(cubeVertexArrayObjectID, worldToProjectionMatrix, cubeModelToWorldMatrix, cubeIndexByteOffset, cubeNumIndices,
+		fullTransformationUniformLocation, modelToWorldMatrixUniformLocation);
+
+
+	// Pass though shader
+	// glUseProgram(programID);
+	glUseProgram(passThroughProgramID);
+	fullTransformationUniformLocation = glGetUniformLocation(passThroughProgramID, "modelToProjectionMatrix");
+	modelToWorldMatrixUniformLocation = glGetUniformLocation(passThroughProgramID, "modelToWorldMatrix");
+	cubeModelToWorldMatrix = glm::translate(lightPositionWorld);
+	cubeModelToWorldMatrix = glm::scale(cubeModelToWorldMatrix, glm::vec3(0.1f, 0.1f, 0.1f));
+	glUniformMatrix4fv(glGetUniformLocation(passThroughProgramID, "modelToProjectionMatrix"), 1, GL_FALSE, &cubeModelToWorldMatrix[0][0]);
 	TransformShape(cubeVertexArrayObjectID, worldToProjectionMatrix, cubeModelToWorldMatrix, cubeIndexByteOffset, cubeNumIndices,
 		fullTransformationUniformLocation, modelToWorldMatrixUniformLocation);
 }
