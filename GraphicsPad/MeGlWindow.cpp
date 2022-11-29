@@ -68,10 +68,12 @@ void SetVertexAttributePointer(GLuint VAOID, GLuint offset) {
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
+	//glEnableVertexAttribArray(3);
 	glBindBuffer(GL_ARRAY_BUFFER, theBufferID);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)offset);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(offset + sizeof(float) * 3));
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(offset + sizeof(float) * 6));
+	//glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(offset + sizeof(float) * 9));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, theBufferID);
 
 }
@@ -87,6 +89,20 @@ void TransformShape(GLuint VAO, mat4 worldToProjectionMatrix, mat4 modelToWorldM
 
 }
 
+void LoadTexture() {
+	const char* texName = "texture/normal.png";
+	QImage timg = QGLWidget::convertToGLFormat(QImage(texName, "PNG"));
+	// Copy file to OpenGL 
+	glActiveTexture(GL_TEXTURE0);
+	GLuint tid;
+	glGenTextures(1, &tid);
+	glBindTexture(GL_TEXTURE_2D, tid);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, timg.width(), timg.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, timg.bits());
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // Set the Tex1 sampler uniform to refer to texture unit 0 
+	int loc = glGetUniformLocation(programID, "Tex1");
+	if (loc >= 0) glUniform1i(loc, 0); else fprintf(stderr, "Uniform variable Tex1 not found!\n");
+}
 void MeGlWindow::sendDataToOpenGL()
 {
 	ShapeData plane = ShapeGenerator::makePlane();
@@ -208,9 +224,16 @@ void MeGlWindow::paintGL()
 	TransformShape(cubeVertexArrayObjectID, worldToProjectionMatrix, cubeModelToWorldMatrix, cubeIndexByteOffset, cubeNumIndices,
 		fullTransformationUniformLocation, modelToWorldMatrixUniformLocation);
 
+	// Textured plane
+	planeModelToWorldMatrix = glm::translate(10.0f, 0.0f, 0.0f);
+	glBindVertexArray(planeVertexArrayObjectID);
+	modelToProjectionMatrix = worldToProjectionMatrix * planeModelToWorldMatrix;
+	glUniformMatrix4fv(fullTransformationUniformLocation, 1, GL_FALSE, &modelToProjectionMatrix[0][0]);
+	glUniformMatrix4fv(modelToWorldMatrixUniformLocation, 1, GL_FALSE, &planeModelToWorldMatrix[0][0]);
+	glDrawElements(GL_TRIANGLES, planeNumIndices, GL_UNSIGNED_SHORT, (void*)planeIndexByteOffset);
+
 
 	// Pass though shader
-	// glUseProgram(programID);
 	glUseProgram(passThroughProgramID);
 	fullTransformationUniformLocation = glGetUniformLocation(passThroughProgramID, "modelToProjectionMatrix");
 	modelToWorldMatrixUniformLocation = glGetUniformLocation(passThroughProgramID, "modelToWorldMatrix");

@@ -3,10 +3,13 @@
 out vec4 daColor;
 in vec3 normalWorld;
 in vec3 vertexPositionWorld;
+//in vec2 texcoord;
 
 uniform vec3 lightPositionWorld;
 uniform vec3 eyePositionWorld;
 uniform vec4 ambientLight;
+
+//uniform Sample2D normal;
 
 void main()
 {
