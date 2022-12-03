@@ -162,6 +162,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="FragmentShaderPassThroughCode.glsl" />
+    <None Include="TexFragShader.glsl" />
+    <None Include="Tex_VertexShader.glsl" />
     <None Include="VertexShaderCode.glsl" />
     <None Include="VertexShaderPassThroughCode.glsl" />
   </ItemGroup>

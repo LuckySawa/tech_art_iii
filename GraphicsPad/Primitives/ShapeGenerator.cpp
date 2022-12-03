@@ -26,14 +26,17 @@ ShapeData ShapeGenerator::makeTriangle()
 		glm::vec3(+0.0f, +1.0f, +0.0f),
 		glm::vec3(+1.0f, +0.0f, +0.0f),
 		glm::vec3(+0.0f, +0.0f, +1.0f),
+		glm::vec3(+1.0f, +1.0f, +1.0f),
 
 		glm::vec3(-1.0f, -1.0f, +0.0f),
 		glm::vec3(+0.0f, +1.0f, +0.0f),
 		glm::vec3(+0.0f, +0.0f, +1.0f),
+		glm::vec3(+1.0f, +1.0f, +1.0f),
 
 		glm::vec3(+1.0f, -1.0f, +0.0f),
 		glm::vec3(+0.0f, +0.0f, +1.0f),
 		glm::vec3(+0.0f, +0.0f, +1.0f),
+		glm::vec3(+1.0f, +1.0f, +1.0f),
 	};
 	ret.numVertices = NUM_ARRAY_ELEMENTS(myTri);
 	ret.vertices = new Vertex[ret.numVertices];
@@ -49,85 +52,127 @@ ShapeData ShapeGenerator::makeTriangle()
 
 ShapeData ShapeGenerator::makeCube() {
 	ShapeData ret;
-	Vertex stackVerts[] = 
+	Vertex stackVerts[] =
 	{
 		vec3(-1.0f, +1.0f, +1.0f),  // 0
 		vec3(+1.0f, +0.0f, +0.0f),	// Color
 		vec3(+0.0f, +1.0f, +0.0f),  // Normal
+		vec3(0.0f, 1.0f, 0.0f),		//TexCoord
+
 		vec3(+1.0f, +1.0f, +1.0f),  // 1
 		vec3(+0.0f, +1.0f, +0.0f),	// Color
 		vec3(+0.0f, +1.0f, +0.0f),  // Normal
+		vec3(1.0f, 1.0f, 0.0f),		//TexCoord
+
 		vec3(+1.0f, +1.0f, -1.0f),  // 2
 		vec3(+0.0f, +0.0f, +1.0f),  // Color
 		vec3(+0.0f, +1.0f, +0.0f),  // Normal
+		vec3(1.0f, 0.0f, 0.0f),		//TexCoord
+
 		vec3(-1.0f, +1.0f, -1.0f),  // 3
 		vec3(+1.0f, +1.0f, +1.0f),  // Color
 		vec3(+0.0f, +1.0f, +0.0f),  // Normal
+		vec3(0.0f, 0.0f, 0.0f),		//TexCoord
 
 		vec3(-1.0f, +1.0f, -1.0f),  // 4
 		vec3(+1.0f, +0.0f, +1.0f),  // Color
 		vec3(+0.0f, +0.0f, -1.0f),  // Normal
+		vec3(0.0f, 1.0f, 0.0f),		//TexCoord
+
 		vec3(+1.0f, +1.0f, -1.0f),  // 5
 		vec3(+0.0f, +0.5f, +0.2f),  // Color
 		vec3(+0.0f, +0.0f, -1.0f),  // Normal
+		vec3(1.0f, 1.0f, 0.0f),		//TexCoord
+
 		vec3(+1.0f, -1.0f, -1.0f),  // 6
 		vec3(+0.8f, +0.6f, +0.4f),  // Color
 		vec3(+0.0f, +0.0f, -1.0f),  // Normal
+		vec3(1.0f, 0.0f, 0.0f),		//TexCoord
+
 		vec3(-1.0f, -1.0f, -1.0f),  // 7
 		vec3(+0.3f, +1.0f, +0.5f),  // Color
 		vec3(+0.0f, +0.0f, -1.0f),  // Normal
+		vec3(0.0f, 0.0f, 0.0f),		//TexCoord
 
 		vec3(+1.0f, +1.0f, -1.0f),  // 8
 		vec3(+0.2f, +0.5f, +0.2f),  // Color
 		vec3(+1.0f, +0.0f, +0.0f),  // Normal
+		vec3(0.0f, 1.0f, 0.0f),		//TexCoord
+
 		vec3(+1.0f, +1.0f, +1.0f),  // 9
 		vec3(+0.9f, +0.3f, +0.7f),  // Color
 		vec3(+1.0f, +0.0f, +0.0f),  // Normal
+		vec3(1.0f, 1.0f, 0.0f),		//TexCoord
+
 		vec3(+1.0f, -1.0f, +1.0f),  // 10
 		vec3(+0.3f, +0.7f, +0.5f),  // Color
 		vec3(+1.0f, +0.0f, +0.0f),  // Normal
+		vec3(1.0f, 0.0f, 0.0f),		//TexCoord
+
 		vec3(+1.0f, -1.0f, -1.0f),  // 11
 		vec3(+0.5f, +0.7f, +0.5f),  // Color
 		vec3(+1.0f, +0.0f, +0.0f),  // Normal
+		vec3(0.0f, 0.0f, 0.0f),		//TexCoord
 
 		vec3(-1.0f, +1.0f, +1.0f),  // 12
 		vec3(+0.7f, +0.8f, +0.2f),  // Color
 		vec3(-1.0f, +0.0f, +0.0f),  // Normal
+		vec3(0.0f, 1.0f, 0.0f),		//TexCoord
+
 		vec3(-1.0f, +1.0f, -1.0f),  // 13
 		vec3(+0.5f, +0.7f, +0.3f),  // Color
 		vec3(-1.0f, +0.0f, +0.0f),  // Normal
+		vec3(1.0f, 1.0f, 0.0f),		//TexCoord
+
 		vec3(-1.0f, -1.0f, -1.0f),  // 14
 		vec3(+0.4f, +0.7f, +0.7f),  // Color
 		vec3(-1.0f, +0.0f, +0.0f),  // Normal
+		vec3(1.0f, 0.0f, 0.0f),		//TexCoord
+
 		vec3(-1.0f, -1.0f, +1.0f),  // 15
 		vec3(+0.2f, +0.5f, +1.0f),  // Color
 		vec3(-1.0f, +0.0f, +0.0f),  // Normal
+		vec3(0.0f, 0.0f, 0.0f),		//TexCoord
 
 		vec3(+1.0f, +1.0f, +1.0f),  // 16
 		vec3(+0.6f, +1.0f, +0.7f),  // Color
 		vec3(+0.0f, +0.0f, +1.0f),  // Normal
+		vec3(0.0f, 1.0f, 0.0f),		//TexCoord
+
 		vec3(-1.0f, +1.0f, +1.0f),  // 17
 		vec3(+0.6f, +0.4f, +0.8f),  // Color
 		vec3(+0.0f, +0.0f, +1.0f),  // Normal
+		vec3(1.0f, 1.0f, 0.0f),		//TexCoord
+
 		vec3(-1.0f, -1.0f, +1.0f),  // 18
 		vec3(+0.2f, +0.8f, +0.7f),  // Color
 		vec3(+0.0f, +0.0f, +1.0f),  // Normal
+		vec3(1.0f, 0.0f, 0.0f),		//TexCoord
+
 		vec3(+1.0f, -1.0f, +1.0f),  // 19
 		vec3(+0.2f, +0.7f, +1.0f),  // Color
 		vec3(+0.0f, +0.0f, +1.0f),  // Normal
+		vec3(0.0f, 0.0f, 0.0f),		//TexCoord
 
 		vec3(+1.0f, -1.0f, -1.0f),  // 20
 		vec3(+0.8f, +0.3f, +0.7f),  // Color
 		vec3(+0.0f, -1.0f, +0.0f),  // Normal
+		vec3(0.0f, 1.0f, 0.0f),		//TexCoord
+
 		vec3(-1.0f, -1.0f, -1.0f),  // 21
 		vec3(+0.8f, +0.9f, +0.5f),  // Color
 		vec3(+0.0f, -1.0f, +0.0f),  // Normal
+		vec3(1.0f, 1.0f, 0.0f),		//TexCoord
+
 		vec3(-1.0f, -1.0f, +1.0f),  // 22
 		vec3(+0.5f, +0.8f, +0.5f),  // Color
 		vec3(+0.0f, -1.0f, +0.0f),  // Normal
+		vec3(1.0f, 0.0f, 0.0f),		//TexCoord
+
 		vec3(+1.0f, -1.0f, +1.0f),  // 23
 		vec3(+0.9f, +1.0f, +0.2f),  // Color
 		vec3(+0.0f, -1.0f, +0.0f),  // Normal
+		vec3(0.0f, 0.0f, 0.0f),		//TexCoord
 	};
 
 	ret.numVertices = NUM_ARRAY_ELEMENTS(stackVerts);
@@ -158,132 +203,172 @@ ShapeData ShapeGenerator::makeArrow()
 		vec3(+0.00f, +0.25f, -0.25f),         // 0
 		vec3(+1.00f, +0.00f, +0.00f),		  // Color
 		vec3(+0.00f, +1.00f, +0.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(+0.50f, +0.25f, -0.25f),         // 1
 		vec3(+1.00f, +0.00f, +0.00f),		  // Color
 		vec3(+0.00f, +1.00f, +0.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(+0.00f, +0.25f, -1.00f),         // 2
 		vec3(+1.00f, +0.00f, +0.00f),		  // Color
 		vec3(+0.00f, +1.00f, +0.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(-0.50f, +0.25f, -0.25f),         // 3
 		vec3(+1.00f, +0.00f, +0.00f),		  // Color
 		vec3(+0.00f, +1.00f, +0.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		// Bottom side of arrow head
 		vec3(+0.00f, -0.25f, -0.25f),         // 4
 		vec3(+0.00f, +0.00f, +1.00f),		  // Color
 		vec3(+0.00f, -1.00f, +0.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(+0.50f, -0.25f, -0.25f),         // 5
 		vec3(+0.00f, +0.00f, +1.00f),		  // Color
 		vec3(+0.00f, -1.00f, +0.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(+0.00f, -0.25f, -1.00f),         // 6
 		vec3(+0.00f, +0.00f, +1.00f),		  // Color
 		vec3(+0.00f, -1.00f, +0.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(-0.50f, -0.25f, -0.25f),         // 7
 		vec3(+0.00f, +0.00f, +1.00f),		  // Color
 		vec3(+0.00f, -1.00f, +0.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		// Right side of arrow tip
 		vec3(+0.50f, +0.25f, -0.25f),         // 8
 		vec3(+0.60f, +1.00f, +0.00f),		  // Color
 		vec3(0.83205032f, 0.00f, -0.55470026f), // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(+0.00f, +0.25f, -1.00f),         // 9
 		vec3(+0.60f, +1.00f, +0.00f),		  // Color
 		vec3(0.83205032f, 0.00f, -0.55470026f), // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(+0.00f, -0.25f, -1.00f),         // 10
 		vec3(+0.60f, +1.00f, +0.00f),		  // Color
 		vec3(0.83205032f, 0.00f, -0.55470026f), // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(+0.50f, -0.25f, -0.25f),         // 11
 		vec3(+0.60f, +1.00f, +0.00f),		  // Color
 		vec3(0.83205032f, 0.00f, -0.55470026f), // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		// Left side of arrow tip
 		vec3(+0.00f, +0.25f, -1.00f),         // 12
 		vec3(+0.00f, +1.00f, +0.00f),		  // Color
 		vec3(-0.55708605f, 0.00f, -0.37139067f), // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(-0.50f, +0.25f, -0.25f),         // 13
 		vec3(+0.00f, +1.00f, +0.00f),		  // Color
 		vec3(-0.55708605f, 0.00f, -0.37139067f), // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(+0.00f, -0.25f, -1.00f),         // 14
 		vec3(+0.00f, +1.00f, +0.00f),		  // Color
 		vec3(-0.55708605f, 0.00f, -0.37139067f), // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(-0.50f, -0.25f, -0.25f),         // 15
 		vec3(+0.00f, +1.00f, +0.00f),		  // Color
 		vec3(-0.55708605f, 0.00f, -0.37139067f), // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		// Back side of arrow tip
 		vec3(-0.50f, +0.25f, -0.25f),         // 16
 		vec3(+0.50f, +0.50f, +0.50f),		  // Color
 		vec3(+0.00f, +0.00f, +1.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(+0.50f, +0.25f, -0.25f),         // 17
 		vec3(+0.50f, +0.50f, +0.50f),		  // Color
 		vec3(+0.00f, +0.00f, +1.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(-0.50f, -0.25f, -0.25f),         // 18
 		vec3(+0.50f, +0.50f, +0.50f),		  // Color
 		vec3(+0.00f, +0.00f, +1.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(+0.50f, -0.25f, -0.25f),         // 19
 		vec3(+0.50f, +0.50f, +0.50f),		  // Color
 		vec3(+0.00f, +0.00f, +1.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		// Top side of back of arrow
 		vec3(+0.25f, +0.25f, -0.25f),         // 20
 		vec3(+1.00f, +0.00f, +0.00f),		  // Color
 		vec3(+0.00f, +1.00f, +0.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(+0.25f, +0.25f, +1.00f),         // 21
 		vec3(+1.00f, +0.00f, +0.00f),		  // Color
 		vec3(+0.00f, +1.00f, +0.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(-0.25f, +0.25f, +1.00f),         // 22
 		vec3(+1.00f, +0.00f, +0.00f),		  // Color
 		vec3(+0.00f, +1.00f, +0.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(-0.25f, +0.25f, -0.25f),         // 23
 		vec3(+1.00f, +0.00f, +0.00f),		  // Color
 		vec3(+0.00f, +1.00f, +0.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		// Bottom side of back of arrow
 		vec3(+0.25f, -0.25f, -0.25f),         // 24
 		vec3(+0.00f, +0.00f, +1.00f),		  // Color
 		vec3(+0.00f, -1.00f, +0.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(+0.25f, -0.25f, +1.00f),         // 25
 		vec3(+0.00f, +0.00f, +1.00f),		  // Color
 		vec3(+0.00f, -1.00f, +0.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(-0.25f, -0.25f, +1.00f),         // 26
 		vec3(+0.00f, +0.00f, +1.00f),		  // Color
 		vec3(+0.00f, -1.00f, +0.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(-0.25f, -0.25f, -0.25f),         // 27
 		vec3(+0.00f, +0.00f, +1.00f),		  // Color
 		vec3(+0.00f, -1.00f, +0.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		// Right side of back of arrow
 		vec3(+0.25f, +0.25f, -0.25f),         // 28
 		vec3(+0.60f, +1.00f, +0.00f),		  // Color
 		vec3(+1.00f, +0.00f, +0.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(+0.25f, -0.25f, -0.25f),         // 29
 		vec3(+0.60f, +1.00f, +0.00f),		  // Color
 		vec3(+1.00f, +0.00f, +0.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(+0.25f, -0.25f, +1.00f),         // 30
 		vec3(+0.60f, +1.00f, +0.00f),		  // Color
 		vec3(+1.00f, +0.00f, +0.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(+0.25f, +0.25f, +1.00f),         // 31
 		vec3(+0.60f, +1.00f, +0.00f),		  // Color
 		vec3(+1.00f, +0.00f, +0.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		// Left side of back of arrow
 		vec3(-0.25f, +0.25f, -0.25f),         // 32
 		vec3(+0.00f, +1.00f, +0.00f),		  // Color
 		vec3(-1.00f, +0.00f, +0.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(-0.25f, -0.25f, -0.25f),         // 33
 		vec3(+0.00f, +1.00f, +0.00f),		  // Color
 		vec3(-1.00f, +0.00f, +0.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(-0.25f, -0.25f, +1.00f),         // 34
 		vec3(+0.00f, +1.00f, +0.00f),		  // Color
 		vec3(-1.00f, +0.00f, +0.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(-0.25f, +0.25f, +1.00f),         // 35
 		vec3(+0.00f, +1.00f, +0.00f),		  // Color
 		vec3(-1.00f, +0.00f, +0.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		// Back side of back of arrow
 		vec3(-0.25f, +0.25f, +1.00f),         // 36
 		vec3(+0.50f, +0.50f, +0.50f),		  // Color
 		vec3(+0.00f, +0.00f, +1.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(+0.25f, +0.25f, +1.00f),         // 37
 		vec3(+0.50f, +0.50f, +0.50f),		  // Color
 		vec3(+0.00f, +0.00f, +1.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(-0.25f, -0.25f, +1.00f),         // 38
 		vec3(+0.50f, +0.50f, +0.50f),		  // Color
 		vec3(+0.00f, +0.00f, +1.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 		vec3(+0.25f, -0.25f, +1.00f),         // 39
 		vec3(+0.50f, +0.50f, +0.50f),		  // Color
 		vec3(+0.00f, +0.00f, +1.00f),         // Normal
+		vec3(+1.0f, +1.0f, +1.0f),			  //TexCoord
 	};
 
 	GLushort stackIndices[] = {
@@ -325,6 +410,11 @@ ShapeData ShapeGenerator::makePlaneVerts(uint dimensions)
 	ret.numVertices = dimensions * dimensions;
 	int half = dimensions / 2;
 	ret.vertices = new Vertex[ret.numVertices];
+
+	float uvDiff = 1.0f / (float)dimensions;
+	float uCoord = 0.0f;
+	float vCoord = 0.0f;
+
 	for (int i = 0; i < dimensions; i++)
 	{
 		for (int j = 0; j < dimensions; j++)
@@ -335,6 +425,11 @@ ShapeData ShapeGenerator::makePlaneVerts(uint dimensions)
 			thisVert.position.y = 0;
 			thisVert.normal = glm::vec3(0.0f, 1.0f, 0.0f);
 			thisVert.color = randomColor();
+
+			uCoord = ((float)j / (float)dimensions);
+			vCoord = ((float)i / (float)dimensions);
+
+			thisVert.texCoord = vec3(uCoord, vCoord, 0.0f);
 		}
 	}
 	return ret;
@@ -458,9 +553,9 @@ ShapeData ShapeGenerator::makeTeapot(uint tesselation, const glm::mat4& lidTrans
 	return ret;
 }
 
-void ShapeGenerator::generatePatches(float * v, float * n, float * tc, unsigned short* el, int grid) {
-	float * B = new float[4 * (grid + 1)];  // Pre-computed Bernstein basis functions
-	float * dB = new float[4 * (grid + 1)]; // Pre-computed derivitives of basis functions
+void ShapeGenerator::generatePatches(float* v, float* n, float* tc, unsigned short* el, int grid) {
+	float* B = new float[4 * (grid + 1)];  // Pre-computed Bernstein basis functions
+	float* dB = new float[4 * (grid + 1)]; // Pre-computed derivitives of basis functions
 
 	int idx = 0, elIndex = 0, tcIndex = 0;
 
@@ -490,7 +585,7 @@ void ShapeGenerator::generatePatches(float * v, float * n, float * tc, unsigned 
 	delete[] dB;
 }
 
-void ShapeGenerator::moveLid(int grid, float *v, mat4 lidTransform) {
+void ShapeGenerator::moveLid(int grid, float* v, mat4 lidTransform) {
 
 	int start = 3 * 12 * (grid + 1) * (grid + 1);
 	int end = 3 * 20 * (grid + 1) * (grid + 1);
@@ -506,10 +601,10 @@ void ShapeGenerator::moveLid(int grid, float *v, mat4 lidTransform) {
 }
 
 void ShapeGenerator::buildPatchReflect(int patchNum,
-	float *B, float *dB,
-	float *v, float *n,
-	float *tc, unsigned short *el,
-	int &index, int &elIndex, int &tcIndex, int grid,
+	float* B, float* dB,
+	float* v, float* n,
+	float* tc, unsigned short* el,
+	int& index, int& elIndex, int& tcIndex, int grid,
 	bool reflectX, bool reflectY)
 {
 	glm::vec3 patch[4][4];
@@ -547,10 +642,10 @@ void ShapeGenerator::buildPatchReflect(int patchNum,
 }
 
 void ShapeGenerator::buildPatch(glm::vec3 patch[][4],
-	float *B, float *dB,
-	float *v, float *n, float *tc,
-	unsigned short *el,
-	int &index, int &elIndex, int &tcIndex, int grid, glm::mat3 reflect,
+	float* B, float* dB,
+	float* v, float* n, float* tc,
+	unsigned short* el,
+	int& index, int& elIndex, int& tcIndex, int grid, glm::mat3 reflect,
 	bool invertNormal)
 {
 	int startIndex = index / 3;
@@ -611,20 +706,20 @@ void ShapeGenerator::getPatch(int patchNum, glm::vec3 patch[][4], bool reverseV)
 					Teapot::cpdata[Teapot::patchdata[patchNum][u * 4 + (3 - v)]][0],
 					Teapot::cpdata[Teapot::patchdata[patchNum][u * 4 + (3 - v)]][1],
 					Teapot::cpdata[Teapot::patchdata[patchNum][u * 4 + (3 - v)]][2]
-					);
+				);
 			}
 			else {
 				patch[u][v] = glm::vec3(
 					Teapot::cpdata[Teapot::patchdata[patchNum][u * 4 + v]][0],
 					Teapot::cpdata[Teapot::patchdata[patchNum][u * 4 + v]][1],
 					Teapot::cpdata[Teapot::patchdata[patchNum][u * 4 + v]][2]
-					);
+				);
 			}
 		}
 	}
 }
 
-void ShapeGenerator::computeBasisFunctions(float * B, float * dB, int grid) {
+void ShapeGenerator::computeBasisFunctions(float* B, float* dB, int grid) {
 	float inc = 1.0f / grid;
 	for (int i = 0; i <= grid; i++)
 	{
@@ -645,7 +740,7 @@ void ShapeGenerator::computeBasisFunctions(float * B, float * dB, int grid) {
 	}
 }
 
-glm::vec3 ShapeGenerator::evaluate(int gridU, int gridV, float *B, glm::vec3 patch[][4])
+glm::vec3 ShapeGenerator::evaluate(int gridU, int gridV, float* B, glm::vec3 patch[][4])
 {
 	glm::vec3 p(0.0f, 0.0f, 0.0f);
 	for (int i = 0; i < 4; i++) {
@@ -656,7 +751,7 @@ glm::vec3 ShapeGenerator::evaluate(int gridU, int gridV, float *B, glm::vec3 pat
 	return p;
 }
 
-glm::vec3 ShapeGenerator::evaluateNormal(int gridU, int gridV, float *B, float *dB, glm::vec3 patch[][4])
+glm::vec3 ShapeGenerator::evaluateNormal(int gridU, int gridV, float* B, float* dB, glm::vec3 patch[][4])
 {
 	glm::vec3 du(0.0f, 0.0f, 0.0f);
 	glm::vec3 dv(0.0f, 0.0f, 0.0f);
@@ -731,6 +826,11 @@ ShapeData ShapeGenerator::makeSphere(uint tesselation)
 			v.position.y = RADIUS * sin(phi) * sin(theta);
 			v.position.z = RADIUS * cos(theta);
 			v.normal = glm::normalize(v.position);
+
+			float uCoord = ((float)row / float(dimensions));
+			float vCoord = ((float)col / float(dimensions));
+
+			v.texCoord = vec3(vCoord, uCoord, 0.0f);
 		}
 	}
 	return ret;

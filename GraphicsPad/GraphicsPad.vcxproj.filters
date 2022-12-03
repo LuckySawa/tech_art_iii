@@ -19,5 +19,7 @@
     <None Include="VertexShaderCode.glsl" />
     <None Include="VertexShaderPassThroughCode.glsl" />
     <None Include="FragmentShaderPassThroughCode.glsl" />
+    <None Include="Tex_VertexShader.glsl" />
+    <None Include="TexFragShader.glsl" />
   </ItemGroup>
 </Project>

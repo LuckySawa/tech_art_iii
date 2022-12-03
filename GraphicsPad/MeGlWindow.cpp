@@ -17,12 +17,13 @@ using glm::vec4;
 using glm::mat4;
 
 const uint NUM_VERTICES_PER_TRI = 3;
-const uint NUM_FLOATS_PER_VERTICE = 9;
+const uint NUM_FLOATS_PER_VERTICE = 12;
 const uint VERTEX_BYTE_SIZE = NUM_FLOATS_PER_VERTICE * sizeof(float);
 
 
 GLuint programID;
 GLuint passThroughProgramID;
+GLuint textureProgramID;
 
 Camera camera;
 GLuint theBufferID;
@@ -68,12 +69,12 @@ void SetVertexAttributePointer(GLuint VAOID, GLuint offset) {
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
-	//glEnableVertexAttribArray(3);
+	glEnableVertexAttribArray(3);
 	glBindBuffer(GL_ARRAY_BUFFER, theBufferID);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)offset);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(offset + sizeof(float) * 3));
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(offset + sizeof(float) * 6));
-	//glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(offset + sizeof(float) * 9));
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(offset + sizeof(float) * 9));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, theBufferID);
 
 }
@@ -225,8 +226,14 @@ void MeGlWindow::paintGL()
 		fullTransformationUniformLocation, modelToWorldMatrixUniformLocation);
 
 	// Textured plane
-	planeModelToWorldMatrix = glm::translate(10.0f, 0.0f, 0.0f);
 	glBindVertexArray(planeVertexArrayObjectID);
+	glUseProgram(textureProgramID);
+	glUniform4fv(glGetUniformLocation(programID, "ambientLight"), 1, &ambientLight[0]);
+	glUniform3fv(glGetUniformLocation(programID, "eyePositionWorld"), 1, &eyePosition[0]);
+	glUniform3fv(glGetUniformLocation(programID, "lightPositionWorld"), 1, &lightPositionWorld[0]);
+	fullTransformationUniformLocation = glGetUniformLocation(textureProgramID, "modelToProjectionMatrix");
+	modelToWorldMatrixUniformLocation = glGetUniformLocation(textureProgramID, "modelToWorldMatrix");
+	planeModelToWorldMatrix = glm::translate(10.0f, 0.0f, 0.0f);
 	modelToProjectionMatrix = worldToProjectionMatrix * planeModelToWorldMatrix;
 	glUniformMatrix4fv(fullTransformationUniformLocation, 1, GL_FALSE, &modelToProjectionMatrix[0][0]);
 	glUniformMatrix4fv(modelToWorldMatrixUniformLocation, 1, GL_FALSE, &planeModelToWorldMatrix[0][0]);
@@ -336,6 +343,7 @@ string MeGlWindow::readShaderCode(const char* fileName)
 
 void MeGlWindow::installShaders()
 {
+	// normal shaders
 	GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 	GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
@@ -365,6 +373,7 @@ void MeGlWindow::installShaders()
 	glDeleteShader(vertexShaderID);
 	glDeleteShader(fragmentShaderID);
 
+	// pass through shaders
 	vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 	fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
@@ -392,6 +401,35 @@ void MeGlWindow::installShaders()
 
 	glDeleteShader(vertexShaderID);
 	glDeleteShader(fragmentShaderID);
+
+	// texture shaders
+	vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+	fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
+	temp = readShaderCode("Tex_VertexShader.glsl");
+	adapter[0] = temp.c_str();
+	glShaderSource(vertexShaderID, 1, adapter, 0);
+	temp = readShaderCode("TexFragShader.glsl");
+	adapter[0] = temp.c_str();
+	glShaderSource(fragmentShaderID, 1, adapter, 0);
+
+	glCompileShader(vertexShaderID);
+	glCompileShader(fragmentShaderID);
+
+	if (!checkShaderStatus(vertexShaderID) || !checkShaderStatus(fragmentShaderID))
+		return;
+
+	textureProgramID = glCreateProgram();
+	glAttachShader(textureProgramID, vertexShaderID);
+	glAttachShader(textureProgramID, fragmentShaderID);
+
+	glLinkProgram(textureProgramID);
+
+	if (!checkProgramStatus(textureProgramID))
+		return;
+
+	glDeleteShader(vertexShaderID);
+	glDeleteShader(fragmentShaderID);
 }
 
 void MeGlWindow::initializeGL()
@@ -409,5 +447,6 @@ MeGlWindow::~MeGlWindow()
 	glDeleteBuffers(1, &theBufferID);
 	glUseProgram(0);
 	glDeleteProgram(programID);
-	glDeleteProgram(passThroughProgramID);
+	glDeleteProgram(passThroughProgramID); 
+	glDeleteProgram(textureProgramID);
 }
