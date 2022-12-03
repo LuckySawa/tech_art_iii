@@ -9,17 +9,20 @@ uniform vec3 lightPositionWorld;
 uniform vec3 eyePositionWorld;
 uniform vec4 ambientLight;
 
-//uniform Sample2D normal;
+uniform sampler2D normalMap;
 
 void main()
 {
+	// Normal from map
+	vec3 normalTS = vec3(texture(normalMap, texcoord));
+
 	// Diffuse
 	vec3 lightVectorWorld = normalize(lightPositionWorld - vertexPositionWorld);
-	float brightness = max(dot(lightVectorWorld, normalize(normalWorld)),0.0);
+	float brightness = max(dot(lightVectorWorld, normalize(normalTS)),0.0);
 	vec4 diffuseLight = vec4(brightness, brightness, brightness, 1.0);
 
 	// Specular
-	vec3 reflectedLightVectorWorld = reflect(-lightVectorWorld, normalWorld);
+	vec3 reflectedLightVectorWorld = reflect(-lightVectorWorld, normalTS);
 	vec3 eyeVectorWorld = normalize(eyePositionWorld - vertexPositionWorld);
 	float s = max(dot(reflectedLightVectorWorld, eyeVectorWorld),0.0);
 	s = pow(s, 50);

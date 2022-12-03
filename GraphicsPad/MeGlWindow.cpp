@@ -24,6 +24,7 @@ const uint VERTEX_BYTE_SIZE = NUM_FLOATS_PER_VERTICE * sizeof(float);
 GLuint programID;
 GLuint passThroughProgramID;
 GLuint textureProgramID;
+GLuint texID;
 
 Camera camera;
 GLuint theBufferID;
@@ -95,14 +96,11 @@ void LoadTexture() {
 	QImage timg = QGLWidget::convertToGLFormat(QImage(texName, "PNG"));
 	// Copy file to OpenGL 
 	glActiveTexture(GL_TEXTURE0);
-	GLuint tid;
-	glGenTextures(1, &tid);
-	glBindTexture(GL_TEXTURE_2D, tid);
+	glGenTextures(1, &texID);
+	glBindTexture(GL_TEXTURE_2D, texID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, timg.width(), timg.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, timg.bits());
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // Set the Tex1 sampler uniform to refer to texture unit 0 
-	int loc = glGetUniformLocation(programID, "Tex1");
-	if (loc >= 0) glUniform1i(loc, 0); else fprintf(stderr, "Uniform variable Tex1 not found!\n");
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 }
 void MeGlWindow::sendDataToOpenGL()
 {
@@ -228,15 +226,18 @@ void MeGlWindow::paintGL()
 	// Textured plane
 	glBindVertexArray(planeVertexArrayObjectID);
 	glUseProgram(textureProgramID);
-	glUniform4fv(glGetUniformLocation(programID, "ambientLight"), 1, &ambientLight[0]);
-	glUniform3fv(glGetUniformLocation(programID, "eyePositionWorld"), 1, &eyePosition[0]);
-	glUniform3fv(glGetUniformLocation(programID, "lightPositionWorld"), 1, &lightPositionWorld[0]);
+	glUniform4fv(glGetUniformLocation(textureProgramID, "ambientLight"), 1, &ambientLight[0]);
+	glUniform3fv(glGetUniformLocation(textureProgramID, "eyePositionWorld"), 1, &eyePosition[0]);
+	glUniform3fv(glGetUniformLocation(textureProgramID, "lightPositionWorld"), 1, &lightPositionWorld[0]);
 	fullTransformationUniformLocation = glGetUniformLocation(textureProgramID, "modelToProjectionMatrix");
 	modelToWorldMatrixUniformLocation = glGetUniformLocation(textureProgramID, "modelToWorldMatrix");
 	planeModelToWorldMatrix = glm::translate(10.0f, 0.0f, 0.0f);
 	modelToProjectionMatrix = worldToProjectionMatrix * planeModelToWorldMatrix;
 	glUniformMatrix4fv(fullTransformationUniformLocation, 1, GL_FALSE, &modelToProjectionMatrix[0][0]);
 	glUniformMatrix4fv(modelToWorldMatrixUniformLocation, 1, GL_FALSE, &planeModelToWorldMatrix[0][0]);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texID);
+	glUniform1f(glGetUniformLocation(textureProgramID, "normalMap"), 0);
 	glDrawElements(GL_TRIANGLES, planeNumIndices, GL_UNSIGNED_SHORT, (void*)planeIndexByteOffset);
 
 
@@ -438,6 +439,7 @@ void MeGlWindow::initializeGL()
 	glewInit();
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+	LoadTexture();
 	sendDataToOpenGL();
 	installShaders();
 }
