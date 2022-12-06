@@ -232,6 +232,7 @@ void MeGlWindow::paintGL()
 	fullTransformationUniformLocation = glGetUniformLocation(textureProgramID, "modelToProjectionMatrix");
 	modelToWorldMatrixUniformLocation = glGetUniformLocation(textureProgramID, "modelToWorldMatrix");
 	planeModelToWorldMatrix = glm::translate(10.0f, 0.0f, 0.0f);
+	planeModelToWorldMatrix = glm::rotate(planeModelToWorldMatrix, 90.0f, glm::vec3(0.0, 0.0, 1.0));
 	modelToProjectionMatrix = worldToProjectionMatrix * planeModelToWorldMatrix;
 	glUniformMatrix4fv(fullTransformationUniformLocation, 1, GL_FALSE, &modelToProjectionMatrix[0][0]);
 	glUniformMatrix4fv(modelToWorldMatrixUniformLocation, 1, GL_FALSE, &planeModelToWorldMatrix[0][0]);
